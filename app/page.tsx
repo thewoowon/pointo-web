@@ -46,7 +46,7 @@ export default function Home() {
       </section>
 
       {/* Social proof */}
-      <section className="border-y border-border bg-surface">
+      <section className="bg-surface-alt">
         <div className="max-w-5xl mx-auto px-6 py-12 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 text-center">
           <div>
             <p className="text-3xl font-bold text-primary">1,170+</p>
@@ -112,7 +112,7 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 sm:py-28 bg-surface border-y border-border">
+      <section className="py-20 sm:py-28 bg-surface-alt">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
