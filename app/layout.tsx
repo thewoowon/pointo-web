@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
+
+/**
+ * 루트 레이아웃 — html/body, 폰트, 전역 스타일만 담당한다.
+ *
+ * 헤더/푸터 같은 마케팅 크롬은 `(marketing)/layout.tsx`로 내렸다.
+ * 점주 대시보드인 `(app)`은 그 크롬을 쓰지 않기 때문이다.
+ */
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,44 +31,6 @@ export const metadata: Metadata = {
   },
 };
 
-function Header() {
-  return (
-    <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-6 h-16">
-        <Link href="/" className="text-xl font-bold text-primary">
-          포인토
-        </Link>
-        <nav className="flex items-center gap-6 text-sm text-muted">
-          <Link href="/privacy" className="hover:text-foreground transition-colors">
-            개인정보처리방침
-          </Link>
-          <Link href="/support" className="hover:text-foreground transition-colors">
-            고객지원
-          </Link>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-border py-10 mt-auto">
-      <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted">
-        <p>&copy; 2025 룰루랄라 컴퍼니. All rights reserved.</p>
-        <div className="flex gap-6">
-          <Link href="/privacy" className="hover:text-foreground transition-colors">
-            개인정보처리방침
-          </Link>
-          <Link href="/support" className="hover:text-foreground transition-colors">
-            고객지원
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -73,11 +41,7 @@ export default function RootLayout({
       lang="ko"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Header />
-        {children}
-        <Footer />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

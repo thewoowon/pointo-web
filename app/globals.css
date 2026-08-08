@@ -1,14 +1,76 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-background: #FFFFFF;
-  --color-foreground: #3D2416;
-  --color-primary: #FC5301;
-  --color-primary-dark: #E04B01;
-  --color-muted: #73777B;
-  --color-surface: #FFFFFF;
-  --color-surface-alt: #F7F8FA;
-  --color-border: #F2F4F6;
+/*
+ * 디자인 토큰 — 단일 원천.
+ *
+ * 값의 출처는 RN 앱의 디자인 시스템(src/theme/semantic.ts, Figma "Semantic
+ * Colors")이다. 마케팅 사이트와 점주 대시보드가 **같은 브랜드 컬러**를 쓴다.
+ *
+ * 구조:
+ *   1) `--color-app-*` — 앱에서 가져온 원본 토큰. 여기만 고치면 된다.
+ *   2) 마케팅 별칭      — 랜딩 마크업이 쓰던 이름(primary/foreground/...)을
+ *                        원본 토큰에 연결한다. 마크업을 건드리지 않으면서
+ *                        값이 두 벌로 갈라지는 것을 막는다.
+ */
+
+@theme {
+  /* ── 표면 ────────────────────────────────────────────────────── */
+  --color-app-bg: #ffffff;
+  --color-app-container: #f1f5f9; /* slate.100 */
+  --color-app-brand: #2974ff; /* blue.500 */
+  --color-app-brand-hover: #1b59f5; /* blue.600 */
+  --color-app-brand-subtle: #eff6ff; /* blue.50 */
+  --color-app-success: #22c55e; /* green.500 */
+  --color-app-warning: #ef4444; /* red.500 */
+  --color-app-disabled: #e2e8f0; /* slate.200 */
+
+  /* ── 텍스트·아이콘 (강조 단계) ───────────────────────────────── */
+  --color-app-text-highest: #000000;
+  --color-app-text-high: #374151; /* gray.700 */
+  --color-app-text-mid: #6b7280; /* gray.500 */
+  --color-app-text-low: #9ca3af; /* gray.400 */
+  --color-app-text-lowest: #d1d5db; /* gray.300 */
+  --color-app-text-brand: #2974ff;
+  --color-app-text-warning: #dc2626; /* red.600 */
+  --color-app-text-on-brand: #ffffff;
+
+  /* ── 경계선 ──────────────────────────────────────────────────── */
+  --color-app-line: #e5e7eb; /* gray.200 */
+  --color-app-line-strong: #d1d5db; /* gray.300 */
+
+  /* ── 적립/사용 배지 ──────────────────────────────────────────
+     앱의 logDisplay.ts와 같은 규칙: 적립=주황, 사용=블루.
+     브랜드가 블루라 "사용"이 브랜드색을 쓰고 "적립"이 주황 액센트다. */
+  --color-app-earn-bg: #ffedd5; /* orange.100 */
+  --color-app-earn-fg: #ea580c; /* orange.600 */
+  --color-app-use-bg: #eff6ff; /* blue.50 */
+  --color-app-use-fg: #2974ff; /* blue.500 */
+
+  /* ── 반경 (RN src/theme/radius.ts) ───────────────────────────── */
+  --radius-app-xs: 4px;
+  --radius-app-sm: 8px;
+  --radius-app-md: 12px;
+  --radius-app-lg: 16px;
+  --radius-app-xl: 20px;
+
+  /*
+   * 앱 폰트. RN은 Pretendard를 번들로 쓴다. 웹에는 아직 폰트 파일이 없어
+   * 한글이 가장 자연스럽게 나오는 시스템 스택으로 대신한다.
+   * 실제 Pretendard를 붙이려면 next/font/local로 교체하면 된다.
+   */
+  --font-app: "Pretendard", "Pretendard Variable", -apple-system,
+    BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui,
+    sans-serif;
+
+  /* ── 마케팅 별칭 — 위 토큰을 그대로 가리킨다 ─────────────────── */
+  --color-background: var(--color-app-bg);
+  --color-foreground: var(--color-app-text-highest);
+  --color-primary: var(--color-app-brand);
+  --color-primary-dark: var(--color-app-brand-hover);
+  --color-muted: var(--color-app-text-mid);
+  --color-surface: var(--color-app-bg);
+  --color-surface-alt: var(--color-app-container);
+  --color-border: var(--color-app-line);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,4 +78,11 @@
 body {
   background: var(--color-background);
   color: var(--color-foreground);
+}
+
+/* 숫자가 자리마다 흔들리지 않게 — 적립 수치·통계에서 특히 중요하다.
+   (RN 앱에서도 같은 이유로 tabular-nums를 고정해 쓰고 있다) */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
