@@ -7,13 +7,7 @@
  * 키가 어긋나 고객-이력 연결이 조용히 깨진다.
  */
 
-import {
-  collection,
-  getCountFromServer,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { getDb } from "../firebase";
 import type { User } from "./types";
 
@@ -42,23 +36,37 @@ export async function getStoreCustomers(
     query(collection(getDb(), "users"), where("store_code", "==", storeCode)),
   );
 
-  return snapshot.docs.map((d) => ({
-    phone: stripStoreSuffix(d.id),
-    ...(d.data() as User),
-  }));
+  // 같은 번호가 문서 두 개로 존재할 수 있다.
+  //   레거시: `01012345678`        (매장 분리 이전에 만들어진 문서)
+  //   복합:   `01012345678_ABC123`
+  // 접미사만 떼고 그대로 내보내면 목록에 같은 사람이 두 번 나오고 회원 수도
+  // 부풀려진다. 실제로 카페 그랑에 10건 있었다.
+  //
+  // 복합 문서를 우선한다 — 앱의 _resolveUserDoc이 복합을 먼저 찾으므로,
+  // 키오스크가 실제로 읽고 쓰는 쪽이 복합이다. 레거시를 보여주면 고객이
+  // 화면에서 보는 값과 어긋난다.
+  const byPhone = new Map<string, CustomerHit>();
+  for (const d of snapshot.docs) {
+    const phone = stripStoreSuffix(d.id);
+    const isComposite = d.id.includes("_");
+    if (!byPhone.has(phone) || isComposite) {
+      byPhone.set(phone, { phone, ...(d.data() as User) });
+    }
+  }
+
+  return [...byPhone.values()];
 }
 
 /**
- * 매장 회원 수.
+ * 매장 회원 수 — **고유 전화번호 수**.
  *
- * 문서를 전부 받지 않고 서버 집계로 센다. 통계 화면은 숫자 하나만 필요하므로
- * 수천 건을 내려받을 이유가 없다. (보안 규칙 관점에서는 일반 목록 조회와 동일)
+ * 서버 집계(getCountFromServer)가 읽기 비용은 훨씬 싸지만 쓰지 않는다.
+ * 그건 *문서* 수를 세는데, 같은 사람이 레거시/복합 문서 두 개로 존재할 수
+ * 있어서 실제 회원 수보다 많게 나온다. 사장님에게 보여주는 숫자가 틀리는 것보다
+ * 읽기 몇 건 더 쓰는 편이 낫다.
  */
 export async function getStoreCustomerCount(storeCode: string): Promise<number> {
-  const snapshot = await getCountFromServer(
-    query(collection(getDb(), "users"), where("store_code", "==", storeCode)),
-  );
-  return snapshot.data().count;
+  return (await getStoreCustomers(storeCode)).length;
 }
 
 /**
