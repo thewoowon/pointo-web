@@ -30,8 +30,9 @@ export default function StoreLayout({
   const { owner } = useAuth();
 
   // 소유 여부는 owner에서 바로 나오는 값이라 state로 둘 이유가 없다.
-  // (null = 아직 계정 로딩 중)
-  const owned = owner ? (owner.storeCodes?.includes(storeCode) ?? false) : null;
+  // 부모 레이아웃이 프로필 로딩·에러를 이미 처리하므로 여기 도달했다면 판정이
+  // 가능한 상태다. 계정 문서가 아예 없으면(owner === null) 소유 매장도 없다.
+  const owned = owner?.storeCodes?.includes(storeCode) ?? false;
 
   // undefined = 조회 중, null = 없음/실패
   const [store, setStore] = useState<Store | null | undefined>(undefined);
@@ -57,7 +58,6 @@ export default function StoreLayout({
   }, [owned, storeCode]);
 
   // 단계별로 나눠서 걸러야 아래에서 store가 Store로 좁혀진다.
-  if (owned === null) return <FullScreenSpinner label="불러오는 중" />;
   if (!owned) return <NoAccess />;
   if (store === undefined) return <FullScreenSpinner label="매장을 여는 중" />;
   if (store === null) return <NoAccess />;

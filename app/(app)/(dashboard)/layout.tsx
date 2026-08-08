@@ -22,7 +22,8 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
-  const { loading, user, owner, pendingDeletion, signOut } = useAuth();
+  const { loading, user, owner, ownerStatus, pendingDeletion, signOut, refreshOwner } =
+    useAuth();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -32,6 +33,41 @@ export default function DashboardLayout({
 
   if (loading || !user) {
     return <FullScreenSpinner label="불러오는 중" />;
+  }
+
+  // 프로필을 못 가져오면 원인을 보여준다. 예전에는 여기서 무한 스피너가 됐다.
+  if (ownerStatus === "error") {
+    return (
+      <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
+        <div className="w-full max-w-[460px] text-center">
+          <h1 className="text-xl font-bold">계정 정보를 불러오지 못했어요</h1>
+          <p className="mt-3 text-sm leading-6 text-app-text-mid">
+            네트워크 문제이거나, 브라우저 확장(광고·추적 차단)이 Firestore 요청을
+            막고 있을 수 있어요. 시크릿 창에서 열어보면 구분됩니다.
+          </p>
+          <div className="mt-8 flex gap-2">
+            <button
+              type="button"
+              onClick={() => refreshOwner()}
+              className="h-12 flex-1 rounded-app-sm bg-app-brand text-sm font-semibold text-app-text-on-brand transition hover:bg-app-brand-hover"
+            >
+              다시 시도
+            </button>
+            <button
+              type="button"
+              onClick={() => signOut()}
+              className="h-12 flex-1 rounded-app-sm border border-app-line-strong text-sm font-medium transition hover:bg-app-container"
+            >
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (ownerStatus === "loading") {
+    return <FullScreenSpinner label="계정 정보를 불러오는 중" />;
   }
 
   // 탈퇴 유예 중인 계정은 매장에 접근할 수 없다. (앱의 DeletionPending과 같은 규칙)
