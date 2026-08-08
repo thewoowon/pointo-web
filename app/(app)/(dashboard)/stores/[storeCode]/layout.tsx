@@ -76,7 +76,9 @@ export default function StoreLayout({
         <h1 className="mt-2 text-2xl font-bold">{store.name ?? storeCode}</h1>
       </div>
 
-      <nav className="mb-8 flex gap-1 border-b border-app-line">
+      {/* 탭 4개는 좁은 화면(아이폰 SE 등)에서 한 줄에 안 들어간다.
+          페이지 전체가 가로로 밀리지 않도록 이 안에서만 스크롤한다. */}
+      <nav className="mb-8 flex gap-1 overflow-x-auto border-b border-app-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {TABS.map((tab) => {
           const href = tab.segment ? `${base}/${tab.segment}` : base;
           const active = pathname === href;
@@ -85,7 +87,7 @@ export default function StoreLayout({
               key={tab.segment}
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`-mb-px border-b-2 px-4 py-3 text-sm font-medium transition ${
+              className={`-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition ${
                 active
                   ? "border-app-brand text-app-brand"
                   : "border-transparent text-app-text-mid hover:text-app-text-highest"
