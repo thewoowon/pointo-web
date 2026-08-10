@@ -12,22 +12,14 @@
  */
 
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
-  query,
   setDoc,
   updateDoc,
-  where,
   writeBatch,
 } from "firebase/firestore";
 import { getDb } from "../firebase";
 import { DEFAULT_SLOT_LIMIT, type Owner, type Store, type StoreSummary } from "./types";
-
-function normalizePhone(phone: string): string {
-  return phone.replace(/[^0-9]/g, "");
-}
 
 /** 계정 프로필 조회 */
 export async function getOwnerProfile(uid: string): Promise<Owner | undefined> {
@@ -139,51 +131,16 @@ export async function getOwnerSlotInfo(
   return { current, limit, canAdd: current < limit };
 }
 
-/**
- * 전화번호로 등록된 기존 매장을 계정에 흡수(claim).
- * 아직 주인이 없거나 본인 소유인 매장만 연결한다.
- * 기존 다점포 점주는 보유 수만큼 슬롯을 grandfather 한다.
- */
-export async function claimStoresByPhone(
-  uid: string,
-  phone: string,
-): Promise<string[]> {
-  const db = getDb();
-  const snapshot = await getDocs(
-    query(
-      collection(db, "stores"),
-      where("ownerPhone", "==", normalizePhone(phone)),
-    ),
-  );
-
-  const claimable = snapshot.docs.filter((d) => {
-    const owner = d.data().ownerId;
-    return !owner || owner === uid;
-  });
-  if (claimable.length === 0) return [];
-
-  const ownerRef = doc(db, "owners", uid);
-  const ownerSnap = await getDoc(ownerRef);
-  const existing: string[] = ownerSnap.exists()
-    ? (ownerSnap.data()?.storeCodes ?? [])
-    : [];
-  const merged = Array.from(
-    new Set([...existing, ...claimable.map((d) => d.id)]),
-  );
-  const currentLimit: number = ownerSnap.exists()
-    ? (ownerSnap.data()?.slotLimit ?? DEFAULT_SLOT_LIMIT)
-    : DEFAULT_SLOT_LIMIT;
-
-  const batch = writeBatch(db);
-  claimable.forEach((d) => batch.update(d.ref, { ownerId: uid }));
-  batch.update(ownerRef, {
-    storeCodes: merged,
-    slotLimit: Math.max(currentLimit, merged.length),
-  });
-  await batch.commit();
-
-  return claimable.map((d) => d.id);
-}
+// claimStoresByPhone(전화번호로 기존 매장 흡수)은 제거했다.
+//
+// stores 컬렉션을 where("ownerPhone", ...)로 훑는 함수였는데, 새 규칙은 stores
+// 목록 조회를 전면 금지한다 — 규칙이 쿼리의 where를 검사할 수 없어서 "내 번호로
+// 한 건"과 "전 매장 덤프"를 구별하지 못하기 때문이다. 애초에 전화번호는 소유를
+// 증명하지 않아서, 점주 연락처만 알면 남의 매장을 통째로 가져갈 수 있는 경로였다.
+//
+// 주인 없는 레거시 매장 연결은 이제 서버에서만 한다:
+//   KBffee/scripts/transfer-store-owner.mjs (Admin SDK)
+// 앱에서도 같은 이유로 제거했다. (KBffee aa9e67a)
 
 /** 탈퇴 요청 — soft delete. 실삭제는 서버 스케줄러가 30일 후 수행한다. */
 export async function requestAccountDeletion(uid: string): Promise<void> {

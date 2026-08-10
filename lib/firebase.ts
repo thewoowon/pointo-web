@@ -13,6 +13,7 @@
 import { getApp, getApps, initializeApp, type FirebaseOptions } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
+import { startAppCheck } from "./app-check";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -54,9 +55,17 @@ export function isFirebaseConfigured(): boolean {
 
 // Next는 개발 중 모듈을 다시 평가하므로 중복 초기화를 막는다.
 function getFirebaseApp() {
-  if (getApps().length > 0) return getApp();
-  assertConfigured(firebaseConfig);
-  return initializeApp(firebaseConfig);
+  const app =
+    getApps().length > 0
+      ? getApp()
+      : (assertConfigured(firebaseConfig), initializeApp(firebaseConfig));
+
+  // App Check은 Firestore·Auth의 첫 요청보다 먼저 시작돼야 한다. getDb()/
+  // getFirebaseAuth()가 전부 여기를 거치므로 이 자리가 유일하게 안전하다.
+  // (컴포넌트의 useEffect는 이미 늦다 — AuthContext가 마운트 즉시 세션을 복원한다)
+  startAppCheck(app);
+
+  return app;
 }
 
 export function getFirebaseAuth(): Auth {
