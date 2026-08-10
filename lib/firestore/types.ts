@@ -80,6 +80,21 @@ export interface Owner {
   migratedTo?: string;
 }
 
+/**
+ * 고객 화면 "최근내역"용 이력 한 줄. `logs` 컬렉션과 별개로 users 문서에
+ * 비정규화해 둔다 — logs 읽기는 점주 전용(firestore.rules)이라 익명 세션인
+ * 키오스크·고객 웹이 조회할 수 없기 때문이다.
+ */
+export interface RecentLog {
+  action: "stamp_saved" | "stamp_used";
+  /** 포인트 모드=포인트 수, 스탬프 모드=스탬프 수(쿠폰 사용이면 장수) */
+  amount: number;
+  /** 발생 시각 (ISO 8601) */
+  at: string;
+  /** 표시용 부가 설명. 쿠폰 사용이면 '아메리카노 쿠폰 1장' 같은 문구 */
+  note?: string;
+}
+
 export interface User {
   last_used: string;
   level: number;
@@ -87,6 +102,8 @@ export interface User {
   phase: string;
   coupons: Record<string, number>;
   couponIssuedAt?: Record<string, string[]>;
+  /** 최근 적립/사용 이력 (최신순). 없으면 아직 한 번도 안 쌓인 문서 */
+  recentLogs?: RecentLog[];
   hasRated?: boolean | null;
   created_at?: string;
   store_code?: string;
