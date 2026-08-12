@@ -9,10 +9,10 @@ export default function SupportPage() {
   return (
     <main className="flex-1 py-16 sm:py-24">
       <div className="max-w-3xl mx-auto px-6">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+        <h1 className="mb-4 text-[26px] font-bold leading-snug sm:text-[34px]">
           고객지원
         </h1>
-        <p className="text-muted text-lg mb-16">
+        <p className="mb-16 text-[17px] leading-relaxed text-muted">
           포인토 이용 중 궁금한 점이 있으시면 언제든 문의해주세요.
         </p>
 
@@ -47,12 +47,16 @@ export default function SupportPage() {
           <h2 className="text-xl font-semibold mb-6">자주 묻는 질문</h2>
           <div className="space-y-4">
             <FaqItem
-              question="카페 등록은 어떻게 하나요?"
-              answer="앱을 설치한 후 '카페 등록' 메뉴에서 매장 정보를 입력하시면 됩니다. 관리자 승인 후 바로 사용할 수 있습니다."
+              question="카페가 아닌데 써도 되나요?"
+              answer="네. 적립 방식을 매장에서 정하기 때문에 볼링장, 미용실, 학원처럼 재방문이 있는 곳이면 그대로 쓰실 수 있습니다. 잔 수 대신 이용 횟수나 금액으로 쌓도록 바꾸면 됩니다."
+            />
+            <FaqItem
+              question="매장 등록은 어떻게 하나요?"
+              answer="앱을 설치하고 구글 또는 애플 계정으로 로그인한 뒤 '매장 등록'에서 매장 정보를 입력하시면 됩니다. 관리자 승인 후 바로 사용할 수 있습니다."
             />
             <FaqItem
               question="고객은 앱을 설치해야 하나요?"
-              answer="아닙니다. 고객은 앱 설치 없이 매장에 비치된 태블릿에서 전화번호만 입력하면 스탬프가 적립됩니다."
+              answer="아닙니다. 고객은 앱 설치 없이 매장에 비치된 태블릿에서 전화번호만 입력하면 적립됩니다."
             />
             <FaqItem
               question="스탬프 개수나 쿠폰 종류를 바꿀 수 있나요?"
@@ -60,7 +64,7 @@ export default function SupportPage() {
             />
             <FaqItem
               question="여러 매장을 운영하고 있는데 각각 등록 가능한가요?"
-              answer="네, 매장별로 별도의 스토어 코드가 발급되며 각 매장의 스탬프와 쿠폰은 독립적으로 관리됩니다."
+              answer="네. 계정 하나로 로그인하면 운영 중인 매장이 모두 보이고, 매장별 적립과 쿠폰은 서로 완전히 분리되어 관리됩니다."
             />
             <FaqItem
               question="고객 정보는 안전한가요?"

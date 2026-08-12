@@ -53,14 +53,22 @@
   --radius-app-lg: 16px;
   --radius-app-xl: 20px;
 
+  /* ── 그림자 ──────────────────────────────────────────────────
+     랜딩에서 카드가 배경 위로 "떠 보이는" 정도를 3단으로만 쓴다. 단계가
+     많아지면 어떤 카드가 더 중요한지 눈이 판단하지 못한다. */
+  --shadow-app-sm: 0 1px 2px rgb(15 23 42 / 0.04),
+    0 1px 3px rgb(15 23 42 / 0.06);
+  --shadow-app-md: 0 2px 4px rgb(15 23 42 / 0.04),
+    0 8px 24px rgb(15 23 42 / 0.08);
+  --shadow-app-lg: 0 4px 8px rgb(15 23 42 / 0.04),
+    0 24px 48px rgb(15 23 42 / 0.12);
+
   /*
-   * 앱 폰트. RN은 Pretendard를 번들로 쓴다. 웹에는 아직 폰트 파일이 없어
-   * 한글이 가장 자연스럽게 나오는 시스템 스택으로 대신한다.
-   * 실제 Pretendard를 붙이려면 next/font/local로 교체하면 된다.
+   * 앱 폰트. RN과 같은 Pretendard를 웹에도 번들한다(app/fonts, 서브셋).
+   * `--font-pretendard`는 next/font/local이 넣어주는 CSS 변수다.
    */
-  --font-app: "Pretendard", "Pretendard Variable", -apple-system,
-    BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui,
-    sans-serif;
+  --font-app: var(--font-pretendard), -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
 
   /* ── 마케팅 별칭 — 위 토큰을 그대로 가리킨다 ─────────────────── */
   --color-background: var(--color-app-bg);
@@ -71,13 +79,34 @@
   --color-surface: var(--color-app-bg);
   --color-surface-alt: var(--color-app-container);
   --color-border: var(--color-app-line);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-app);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
+  font-family: var(--font-app);
+}
+
+/* 한글 제목은 기본 자간이 헐거워 보인다. 큰 글자일수록 조금씩 조여 준다.
+   (본문은 건드리지 않는다 — 조이면 오히려 읽기 나빠진다) */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+  word-break: keep-all; /* "단골을 만드는 / 법"처럼 단어 중간에서 끊기는 것 방지 */
+}
+
+/* 스크롤 앵커(#features 등)로 이동할 때 sticky 헤더에 제목이 가리지 않게 */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* 숫자가 자리마다 흔들리지 않게 — 적립 수치·통계에서 특히 중요하다.

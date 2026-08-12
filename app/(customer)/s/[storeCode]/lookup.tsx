@@ -210,7 +210,7 @@ function Result({
 
         {isPoint ? (
           <p className="tabular mt-4 text-4xl font-bold text-app-brand">
-            {view.stamps.toLocaleString()}
+            {view.points.toLocaleString()}
             <span className="ml-1 text-xl">{view.config.pointUnit}</span>
           </p>
         ) : (

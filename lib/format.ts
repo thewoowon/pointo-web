@@ -6,6 +6,8 @@
  * 특히 마스킹은 개인정보 노출 범위라 임의로 느슨해지면 안 된다.
  */
 
+import type { Log, StoreConfig } from "./firestore/types";
+
 /** 목록 행에 쓰는 뒤 4자리. 예) 01012345678 → '5678' */
 export function phoneLast4(phone: string): string {
   return (phone || "").replace(/\D/g, "").slice(-4);
@@ -31,6 +33,21 @@ export function logActionStyle(action: string): LogActionStyle {
   return action === "stamp_saved"
     ? { label: "적립", className: "bg-app-earn-bg text-app-earn-fg" }
     : { label: "사용", className: "bg-app-use-bg text-app-use-fg" };
+}
+
+/**
+ * 로그 한 건의 증감 표기. 예) '+10,000원' · '−1개'
+ *
+ * 단위는 **로그가 남긴 모드**가 정한다. 같은 `stamp` 필드에 스탬프 개수와
+ * 포인트 금액이 들어가기 때문에, 매장의 현재 모드로 붙이면 모드를 바꾼 매장의
+ * 옛 기록에 엉뚱한 단위가 달린다. `mode`가 없는 건 이 필드가 생기기 전
+ * 기록이고, 그때까진 아무도 모드를 바꾼 적이 없어 매장 모드로 봐도 된다.
+ */
+export function logAmountLabel(log: Log, config: StoreConfig): string {
+  const mode = log.mode ?? config.mode;
+  const sign = log.action === "stamp_saved" ? "+" : "−";
+  const amount = Math.abs(Number(log.stamp) || 0).toLocaleString();
+  return `${sign}${amount}${mode === "point" ? config.pointUnit : "개"}`;
 }
 
 const TIME_FORMAT = new Intl.DateTimeFormat("ko-KR", {

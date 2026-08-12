@@ -58,8 +58,23 @@ function weight(log: Log, isPointMode: boolean): number {
   return isPointMode ? Number(log.stamp) || 0 : 1;
 }
 
+/**
+ * 지금 보고 있는 모드의 기록인지.
+ *
+ * 모드를 바꾼 매장은 `logs.stamp`에 스탬프 '개수'와 포인트 '금액'이 섞여
+ * 있다. 둘을 합치면 단위 없는 숫자가 되므로 현재 모드의 로그만 센다.
+ * `mode`가 없는 로그는 이 필드가 생기기 전 기록이고, 그때까진 어느 매장도
+ * 모드를 바꾼 적이 없어서 현재 모드로 봐도 안전하다.
+ */
+function inMode(log: Log, isPointMode: boolean): boolean {
+  const logMode = log.mode ?? (isPointMode ? "point" : "stamp");
+  return logMode === (isPointMode ? "point" : "stamp");
+}
+
 function sum(logs: Log[], isPointMode: boolean): number {
-  return logs.reduce((total, log) => total + weight(log, isPointMode), 0);
+  return logs
+    .filter((log) => inMode(log, isPointMode))
+    .reduce((total, log) => total + weight(log, isPointMode), 0);
 }
 
 /** 오늘 요약 — 적립 / 사용 / 순방문자 */

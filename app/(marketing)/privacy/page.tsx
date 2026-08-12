@@ -9,12 +9,12 @@ export default function PrivacyPage() {
   return (
     <main className="flex-1 py-16 sm:py-24">
       <article className="max-w-3xl mx-auto px-6">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+        <h1 className="mb-2 text-[26px] font-bold leading-snug sm:text-[34px]">
           개인정보 처리방침
         </h1>
-        <p className="text-muted text-sm mb-12">시행일: 2025년 5월 1일</p>
+        <p className="mb-12 text-sm text-muted">시행일: 2025년 5월 1일</p>
 
-        <div className="space-y-10 text-[15px] leading-7 text-foreground/80">
+        <div className="space-y-10 text-[15px] leading-7 text-app-text-high">
           <p>
             룰루랄라 컴퍼니(이하 &ldquo;회사&rdquo;)는 「개인정보 보호법」에 따라
             이용자의 개인정보를 보호하고 이와 관련한 고충을 신속하게 처리하기 위하여

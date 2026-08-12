@@ -98,7 +98,19 @@ export interface RecentLog {
 export interface User {
   last_used: string;
   level: number;
+  /**
+   * 스탬프 모드의 현재 판에 찍힌 스탬프 수. **스탬프 모드 전용 필드다.**
+   * 포인트 잔액은 `points`에 있다 — 예전엔 두 모드가 이 필드 하나를 공유해서,
+   * 포인트 매장이 스탬프 모드로 바뀌면 앱의 `stamps % stampsPerCoupon`이
+   * 34만 포인트를 한 자리로 잘라버렸다.
+   */
   stamps: number;
+  /**
+   * 포인트 모드의 적립금 잔액. **포인트 모드 전용 필드다.**
+   * 백필(앱 레포 scripts/migrate-points-field.mjs) 전 문서엔 없을 수 있어
+   * 읽을 땐 `pointsOf()`를 쓴다.
+   */
+  points?: number;
   phase: string;
   coupons: Record<string, number>;
   couponIssuedAt?: Record<string, string[]>;
@@ -119,6 +131,13 @@ export interface Log {
   store_code?: string;
   user_level?: number;
   coupons_issued?: number;
+  /**
+   * 기록 시점의 매장 운영 모드. `stamp`면 `stamp` 필드가 스탬프 개수,
+   * `point`면 포인트 금액 — 같은 필드에 단위가 다른 값이 들어간다.
+   * 모드를 바꾼 매장은 두 단위가 섞이므로 집계는 로그마다 이 값을 봐야 한다.
+   * 없는 로그는 이 필드가 생기기 전 기록이라 매장의 현재 모드로 봐도 된다.
+   */
+  mode?: "stamp" | "point";
 }
 
 /** 스위처에 뿌릴 매장 요약 */

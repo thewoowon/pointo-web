@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { subscribeCustomerLogs } from "@/lib/firestore/logs";
-import type { Log } from "@/lib/firestore/types";
-import type { CustomerHit } from "@/lib/firestore/users";
-import { formatTime, logActionStyle, maskPhone } from "@/lib/format";
+import type { Log, StoreConfig } from "@/lib/firestore/types";
+import { pointsOf, type CustomerHit } from "@/lib/firestore/users";
+import {
+  formatTime,
+  logActionStyle,
+  logAmountLabel,
+  maskPhone,
+} from "@/lib/format";
 import { Spinner } from "@/components/ui/spinner";
 
 const DATE_FORMAT = new Intl.DateTimeFormat("ko-KR", {
@@ -28,10 +33,14 @@ const DATE_FORMAT = new Intl.DateTimeFormat("ko-KR", {
 export function CustomerDetail({
   storeCode,
   customer,
+  config,
 }: {
   storeCode: string;
   customer: CustomerHit;
+  config: StoreConfig;
 }) {
+  // 보유량이 사는 필드가 모드마다 다르다 — 포인트=points, 스탬프=stamps.
+  const isPoint = config.mode === "point";
   const [logs, setLogs] = useState<Log[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,9 +70,13 @@ export function CustomerDetail({
         <p className="tabular text-lg font-bold">{maskPhone(customer.phone)}</p>
         <dl className="mt-4 grid grid-cols-3 gap-3">
           <div>
-            <dt className="text-xs text-app-text-low">스탬프</dt>
+            <dt className="text-xs text-app-text-low">
+              {isPoint ? "포인트" : "스탬프"}
+            </dt>
             <dd className="tabular mt-1 text-xl font-bold">
-              {customer.stamps ?? 0}
+              {isPoint
+                ? `${pointsOf(customer).toLocaleString()}${config.pointUnit}`
+                : (customer.stamps ?? 0)}
             </dd>
           </div>
           <div>
@@ -114,8 +127,7 @@ export function CustomerDetail({
                     {style.label}
                   </span>
                   <span className="tabular text-sm text-app-text-high">
-                    {log.action === "stamp_saved" ? "+" : "−"}
-                    {Math.abs(log.stamp)}
+                    {logAmountLabel(log, config)}
                   </span>
                   <span className="ml-auto text-xs text-app-text-low">
                     {DATE_FORMAT.format(log.timestamp)}{" "}

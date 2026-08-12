@@ -1,209 +1,424 @@
+import Image from "next/image";
+
+import { AppStoreButton, ContactButton } from "@/components/marketing/cta";
+import { Testimonials } from "@/components/marketing/testimonials";
+import { stats, toManCheon, withComma } from "@/content/stats";
+
+/**
+ * 랜딩(hellopointo.com).
+ *
+ * 이 페이지의 이미지는 전부 `public/screenshot/`의 파생본이다. App Store
+ * 스크린샷에서 상단 카피를 잘라내고 개인정보를 가린 것으로, **배경색이 우리
+ * 토큰과 같다**(스탬프 화면=브랜드 블루, 나머지=container 회색). 그래서
+ * 이미지를 놓을 때는 섹션 배경을 반드시 맞춰야 한다. 배경이 어긋나면 이미지
+ * 주위에 네모난 자국이 그대로 드러난다.
+ * 자세한 건 scripts/crop-screenshots.py 참고.
+ */
+
 export default function Home() {
   return (
     <main className="flex-1">
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="max-w-5xl mx-auto px-6 pt-24 pb-20 sm:pt-32 sm:pb-28">
-          <div className="max-w-2xl">
-            <p className="text-primary font-semibold text-sm tracking-wide mb-4">
-              카페 스탬프, 이제 앱 하나로
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-bold leading-tight tracking-tight">
-              종이 쿠폰은 그만.
-              <br />
-              <span className="text-primary">전화번호 하나</span>로 끝.
-            </h1>
-            <p className="mt-6 text-lg text-muted leading-relaxed max-w-lg">
-              고객은 전화번호만 입력하면 스탬프 적립. 사장님은 태블릿 하나로 매장
-              관리. 카페 운영의 가장 간단한 시작, 포인토.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <a
-                href="https://apps.apple.com/app/id6763893004"
-                className="inline-flex items-center justify-center gap-2 bg-primary text-white font-semibold px-8 py-4 rounded-xl hover:bg-primary-dark transition-colors text-base"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                </svg>
-                App Store에서 다운로드
-              </a>
-              <a
-                href="#features"
-                className="inline-flex items-center justify-center font-semibold px-8 py-4 rounded-xl border border-border hover:bg-surface transition-colors text-base"
-              >
-                기능 알아보기
-              </a>
-            </div>
-          </div>
-        </div>
-        {/* Decorative gradient */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      </section>
-
-      {/* Social proof */}
-      <section className="bg-surface-alt">
-        <div className="max-w-5xl mx-auto px-6 py-12 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 text-center">
-          <div>
-            <p className="text-3xl font-bold text-primary">1,170+</p>
-            <p className="text-sm text-muted mt-1">가입 고객 수</p>
-          </div>
-          <div className="hidden sm:block w-px h-10 bg-border" />
-          <div>
-            <p className="text-3xl font-bold text-primary">10초</p>
-            <p className="text-sm text-muted mt-1">스탬프 적립 소요 시간</p>
-          </div>
-          <div className="hidden sm:block w-px h-10 bg-border" />
-          <div>
-            <p className="text-3xl font-bold text-primary">0원</p>
-            <p className="text-sm text-muted mt-1">종이 쿠폰 비용</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="py-20 sm:py-28">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              왜 포인토인가요?
-            </h2>
-            <p className="mt-4 text-muted text-lg max-w-md mx-auto">
-              복잡한 건 빼고, 필요한 것만 담았습니다.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <FeatureCard
-              emoji="📱"
-              title="전화번호만으로 가입"
-              description="앱 설치, 회원가입, 카드 발급 필요 없이 전화번호 입력 한 번이면 스탬프가 쌓입니다."
-            />
-            <FeatureCard
-              emoji="☕"
-              title="자동 쿠폰 발급"
-              description="스탬프가 다 차면 자동으로 무료 음료 쿠폰이 발급됩니다. 잊어버릴 일이 없어요."
-            />
-            <FeatureCard
-              emoji="📊"
-              title="매장 대시보드"
-              description="오늘 방문 고객 수, 신규 가입, 쿠폰 사용률까지. 사장님이 알아야 할 숫자를 한눈에."
-            />
-            <FeatureCard
-              emoji="🎨"
-              title="카페별 맞춤 설정"
-              description="스탬프 개수, 쿠폰 종류, 환영 메시지까지. 우리 카페에 맞게 자유롭게 설정하세요."
-            />
-            <FeatureCard
-              emoji="🏆"
-              title="등급 시스템"
-              description="새싹 → 단골 → 단골왕 → 레전드. 고객이 다시 찾아오게 만드는 리텐션 장치."
-            />
-            <FeatureCard
-              emoji="🔒"
-              title="개인정보 최소 수집"
-              description="전화번호 외에는 아무것도 수집하지 않습니다. 심플하고 안전합니다."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="py-20 sm:py-28 bg-surface-alt">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              이렇게 사용해요
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-12">
-            <StepCard
-              step="1"
-              title="카페 등록"
-              description="앱에서 카페를 등록하고 승인을 받으세요. 태블릿 하나면 준비 끝."
-            />
-            <StepCard
-              step="2"
-              title="고객이 전화번호 입력"
-              description="고객이 매장 태블릿에 전화번호를 입력하면 자동으로 스탬프가 적립됩니다."
-            />
-            <StepCard
-              step="3"
-              title="쿠폰 자동 발급"
-              description="스탬프가 다 차면 무료 음료 쿠폰이 자동 발급. 고객도 사장님도 신경 쓸 게 없어요."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 sm:py-28">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-            지금 바로 시작하세요
-          </h2>
-          <p className="mt-4 text-muted text-lg max-w-md mx-auto">
-            종이 쿠폰 주문하는 비용이면 한 달 내내 쓸 수 있어요.
-          </p>
-          <div className="mt-10">
-            <a
-              href="https://apps.apple.com/app/id6763893004"
-              className="inline-flex items-center justify-center gap-2 bg-primary text-white font-semibold px-10 py-4 rounded-xl hover:bg-primary-dark transition-colors text-lg"
-            >
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-              </svg>
-              App Store에서 다운로드
-            </a>
-          </div>
-        </div>
-      </section>
+      <Hero />
+      <PaperVsPointo />
+      <Features />
+      <Testimonials />
+      <HowItWorks />
+      <ClosingCta />
     </main>
   );
 }
 
-function FeatureCard({
-  emoji,
-  title,
-  description,
-}: {
-  emoji: string;
-  title: string;
-  description: string;
-}) {
+/* ────────────────────────────────────────────────────────────────────────
+   히어로
+   ──────────────────────────────────────────────────────────────────────── */
+
+function Hero() {
   return (
-    <div className="bg-surface rounded-2xl border border-border p-7 hover:shadow-sm transition-shadow">
-      <div className="text-3xl mb-4">{emoji}</div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-muted text-sm leading-relaxed">{description}</p>
+    // 스크린샷 배경이 정확히 이 파랑이라 폰이 배경에서 솟은 것처럼 이어진다.
+    <section className="relative overflow-hidden bg-primary text-white">
+      <div className="mx-auto grid max-w-6xl gap-4 px-6 pt-14 sm:pt-20 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:pt-24">
+        <div className="lg:pb-24">
+          <p className="text-[13px] font-semibold tracking-wide text-white/70 sm:text-sm">
+            카페 · 볼링장 · 미용실 · 학원 · 동네 어디든
+          </p>
+          <h1 className="mt-4 text-[2rem] font-bold leading-[1.25] sm:text-5xl sm:leading-[1.2]">
+            포스 없이,
+            <br />
+            태블릿 한 대로
+            <br />
+            단골을 만듭니다
+          </h1>
+          <p className="mt-6 max-w-md text-[17px] leading-relaxed text-white/85 sm:text-lg">
+            고객은 전화번호만 누르면 적립 끝. 사장님은 앱 하나로 적립·쿠폰·
+            통계까지. 종이 쿠폰과 포스 사이에 없던 선택지입니다.
+          </p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <AppStoreButton tone="on-brand" />
+            <ContactButton tone="on-brand" />
+          </div>
+          {/* 숫자는 content/stats.ts 한 곳에서만 온다. 손으로 고치지 말 것. */}
+          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-white/20 pt-7">
+            <Stat
+              value={`${withComma(stats.customers)}명`}
+              label="누적 가입 고객"
+            />
+            <Stat
+              value={`${toManCheon(stats.events)}건`}
+              label="쌓인 적립·사용"
+            />
+            <Stat value="0원" label="포스·쿠폰 인쇄 비용" />
+          </dl>
+        </div>
+
+        {/* 폰은 섹션 바닥에 붙여 잘린 아래쪽이 화면 밖으로 이어지게 둔다. */}
+        <div className="flex items-end justify-center lg:justify-end">
+          <Image
+            src="/screenshot/phone-stamp.webp"
+            alt="포인토 고객 화면 — 이름과 함께 모인 스탬프 6개, 사용 가능한 쿠폰이 보인다"
+            width={900}
+            height={1487}
+            priority
+            className="w-[276px] max-w-full sm:w-[330px] lg:w-[380px]"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div>
+      <dt className="tabular text-2xl font-bold sm:text-[28px]">{value}</dt>
+      <dd className="mt-1 text-[13px] leading-snug text-white/70">{label}</dd>
     </div>
   );
 }
 
-function StepCard({
-  step,
-  title,
-  description,
-}: {
-  step: string;
-  title: string;
-  description: string;
-}) {
+/* ────────────────────────────────────────────────────────────────────────
+   종이 쿠폰과의 대비 — 이모지 카드 그리드를 대신하는 자리
+   ──────────────────────────────────────────────────────────────────────── */
+
+const PAPER = [
+  "도장을 찍어 주고, 잃어버렸다고 하면 그만큼 다시 채워 준다",
+  "이번 달에 몇 명이 다시 왔는지 알 방법이 없다",
+  "다 쓰면 또 인쇄한다. 디자인 바꾸면 또 처음부터",
+];
+
+const POINTO = [
+  "고객이 번호를 누르면 적립. 잃어버릴 게 없다",
+  "오늘 방문·신규·쿠폰 사용이 숫자로 남는다",
+  "인쇄물이 없으니 바꾸는 데 비용이 들지 않는다",
+];
+
+function PaperVsPointo() {
   return (
-    <div className="text-center">
-      <div className="w-12 h-12 rounded-full bg-primary text-white text-xl font-bold flex items-center justify-center mx-auto mb-5">
-        {step}
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-6">
+        <h2 className="max-w-xl text-[26px] font-bold leading-snug sm:text-[34px]">
+          종이 쿠폰은, 사장님이 대신 일해 줘야 굴러갑니다
+        </h2>
+        <div className="mt-10 grid gap-4 sm:mt-12 lg:grid-cols-2 lg:gap-6">
+          <div className="rounded-app-xl bg-surface-alt p-7 sm:p-9">
+            <p className="text-sm font-semibold text-muted">지금까지</p>
+            <ul className="mt-5 space-y-4">
+              {PAPER.map((line) => (
+                <li key={line} className="flex gap-3 text-muted">
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 h-px w-4 shrink-0 bg-app-line-strong"
+                  />
+                  <span className="text-[15px] leading-relaxed sm:text-base">
+                    {line}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="rounded-app-xl border border-primary/15 bg-app-brand-subtle p-7 shadow-app-sm sm:p-9">
+            <p className="text-sm font-semibold text-primary">포인토를 쓰면</p>
+            <ul className="mt-5 space-y-4">
+              {POINTO.map((line) => (
+                <li key={line} className="flex gap-3">
+                  <Check />
+                  <span className="text-[15px] leading-relaxed text-app-text-high sm:text-base">
+                    {line}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-muted text-sm leading-relaxed">{description}</p>
+    </section>
+  );
+}
+
+function Check() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+      className="mt-1 shrink-0 text-primary"
+    >
+      <path
+        d="M4.5 10.5 8 14l7.5-8"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   제품 투어 — 화면을 좌우로 번갈아 놓아 스크롤에 리듬을 준다
+   ──────────────────────────────────────────────────────────────────────── */
+
+function Features() {
+  return (
+    // 배경색이 스크린샷 배경(#f1f5f9)과 같아야 이미지 테두리가 보이지 않는다.
+    <section id="features" className="bg-surface-alt">
+      <div className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+        <div className="max-w-xl">
+          <p className="text-sm font-semibold text-primary">화면으로 보기</p>
+          <h2 className="mt-3 text-[26px] font-bold leading-snug sm:text-[34px]">
+            설명서가 필요 없는 화면만 남겼습니다
+          </h2>
+        </div>
+
+        <div className="mt-14 space-y-20 sm:mt-16 sm:space-y-28">
+          <FeatureRow
+            index="01"
+            title="고객이 하는 일은 번호를 누르는 것뿐"
+            body="앱 설치도, 회원가입도, 카드 발급도 없습니다. 매장 태블릿에 전화번호를 넣으면 그 자리에서 적립됩니다."
+            bullets={[
+              "첫 방문 고객도 같은 화면에서 바로 가입",
+              "전화번호 외에는 아무것도 받지 않습니다",
+            ]}
+            image="phone-keypad"
+            alt="전화번호 입력 화면 — 숫자 키패드와 010-1234-5678 입력란"
+            width={900}
+            height={1523}
+          />
+
+          <FeatureRow
+            index="02"
+            title="스탬프로 할지 포인트로 할지, 매장이 정합니다"
+            body="열 잔에 한 잔이 맞는 곳이 있고, 금액만큼 쌓아 두는 편이 맞는 곳이 있습니다. 운영 방식을 매장별로 고르세요."
+            bullets={[
+              "스탬프 개수·쿠폰 종류·환영 문구까지 설정",
+              "카페가 아니어도 됩니다. 게임 수, 이용 횟수 무엇이든",
+            ]}
+            image="phone-points"
+            alt="매장 설정 화면과 포인트 적립 화면 — 5,044P가 쌓여 있다"
+            width={900}
+            height={1484}
+            reverse
+          />
+
+          <WideShot
+            index="03"
+            title="오늘 무엇이 오갔는지, 한 화면에"
+            body="적립과 사용이 시간 순으로 쌓입니다. 한 건을 누르면 그 고객이 무엇을 썼는지까지 이어서 볼 수 있어요."
+            image="tablet-logs"
+            alt="태블릿 적립내역 화면 — 날짜별 적립·사용 목록과 오른쪽 상세 패널"
+            width={1800}
+            height={1064}
+          />
+
+          <FeatureRow
+            index="04"
+            title="포스가 없어도, 사장님이 직접 적립합니다"
+            body="번호 뒷자리만 알면 고객을 찾아 바로 적립할 수 있습니다. 손님이 태블릿 앞에 서 있지 않아도 됩니다."
+            bullets={[
+              "뒷자리 두 자리만으로 검색",
+              "적립 실수는 내역에서 되돌리기",
+            ]}
+            image="phone-search"
+            alt="고객 검색 화면 — 번호 뒷자리로 고객을 찾아 적립한다"
+            width={900}
+            height={1523}
+          />
+
+          {/* 같은 "내 매장" 화면이라도 폰 스크린샷은 쓰지 않는다.
+              로그인 배지가 카카오로 찍혀 있어서 없는 로그인 수단을 광고하게
+              된다. 태블릿 쪽은 Google로 나온다. */}
+          <WideShot
+            index="05"
+            title="매장이 여러 곳이어도 계정은 하나"
+            body="구글이나 애플 계정으로 한 번 로그인하면 운영 중인 매장이 모두 보입니다. 매장마다 코드를 외울 필요가 없습니다."
+            image="tablet-stores"
+            alt="내 매장 화면 — 한 계정에 운영 중인 매장이 목록으로 보인다"
+            width={1800}
+            height={795}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+type FeatureRowProps = {
+  index: string;
+  title: string;
+  body: string;
+  bullets: string[];
+  image: string;
+  alt: string;
+  width: number;
+  height: number;
+  reverse?: boolean;
+};
+
+function FeatureRow({
+  index,
+  title,
+  body,
+  bullets,
+  image,
+  alt,
+  width,
+  height,
+  reverse = false,
+}: FeatureRowProps) {
+  return (
+    <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className={reverse ? "lg:order-2" : undefined}>
+        <p className="tabular text-sm font-semibold text-primary">{index}</p>
+        <h3 className="mt-3 text-[22px] font-bold leading-snug sm:text-[28px]">
+          {title}
+        </h3>
+        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted sm:text-base">
+          {body}
+        </p>
+        <ul className="mt-6 space-y-3">
+          {bullets.map((b) => (
+            <li key={b} className="flex gap-3">
+              <Check />
+              <span className="text-[15px] text-app-text-high">{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className={`flex justify-center ${reverse ? "lg:order-1" : ""}`}>
+        <Image
+          src={`/screenshot/${image}.webp`}
+          alt={alt}
+          width={width}
+          height={height}
+          sizes="(max-width: 1024px) 320px, 400px"
+          className="w-[300px] max-w-full sm:w-[340px] lg:w-[400px]"
+        />
+      </div>
     </div>
+  );
+}
+
+function WideShot({
+  index,
+  title,
+  body,
+  image,
+  alt,
+  width,
+  height,
+}: Omit<FeatureRowProps, "bullets" | "reverse">) {
+  return (
+    <div>
+      <div className="max-w-lg">
+        <p className="tabular text-sm font-semibold text-primary">{index}</p>
+        <h3 className="mt-3 text-[22px] font-bold leading-snug sm:text-[28px]">
+          {title}
+        </h3>
+        <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base">
+          {body}
+        </p>
+      </div>
+      <Image
+        src={`/screenshot/${image}.webp`}
+        alt={alt}
+        width={width}
+        height={height}
+        sizes="(max-width: 1152px) 100vw, 1152px"
+        className="mt-8 w-full"
+      />
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   시작하는 법
+   ──────────────────────────────────────────────────────────────────────── */
+
+const STEPS = [
+  {
+    title: "앱을 받고 매장을 등록합니다",
+    body: "구글이나 애플 계정으로 로그인한 뒤 매장 정보를 넣으면 됩니다. 준비물은 쓰던 태블릿 한 대.",
+  },
+  {
+    title: "우리 매장 방식을 고릅니다",
+    body: "스탬프 개수, 쿠폰 종류, 환영 문구를 정하세요. 나중에 언제든 바꿀 수 있습니다.",
+  },
+  {
+    title: "태블릿을 손님 쪽으로 돌려 둡니다",
+    body: "이제 고객이 번호를 누르면 적립됩니다. 사장님이 해야 할 일은 여기서 끝납니다.",
+  },
+];
+
+function HowItWorks() {
+  return (
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-6">
+        <h2 className="max-w-lg text-[26px] font-bold leading-snug sm:text-[34px]">
+          오늘 신청하면, 오늘 적립을 시작합니다
+        </h2>
+        <ol className="mt-12 grid gap-10 sm:grid-cols-3 sm:gap-8">
+          {STEPS.map((step, i) => (
+            <li key={step.title} className="border-t-2 border-primary pt-6">
+              <p className="tabular text-sm font-semibold text-primary">
+                STEP {i + 1}
+              </p>
+              <h3 className="mt-2 text-lg font-semibold leading-snug">
+                {step.title}
+              </h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-muted">
+                {step.body}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   맺음 CTA
+   ──────────────────────────────────────────────────────────────────────── */
+
+function ClosingCta() {
+  return (
+    <section className="bg-primary text-white">
+      <div className="mx-auto max-w-6xl px-6 py-20 text-center sm:py-24">
+        <h2 className="text-[26px] font-bold leading-snug sm:text-[34px]">
+          쿠폰 한 번 인쇄할 비용이면,
+          <br className="sm:hidden" /> 계속 씁니다
+        </h2>
+        <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-white/85 sm:text-base">
+          어떤 업종인지, 지금 어떻게 적립하고 계신지만 알려주세요. 우리 매장에
+          맞는 설정까지 같이 잡아 드립니다.
+        </p>
+        <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+          <AppStoreButton tone="on-brand" />
+          <ContactButton tone="on-brand" />
+        </div>
+      </div>
+    </section>
   );
 }

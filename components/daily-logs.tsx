@@ -2,8 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { subscribeDailyLogs } from "@/lib/firestore/logs";
-import type { Log } from "@/lib/firestore/types";
-import { formatTime, logActionStyle, phoneLast4 } from "@/lib/format";
+import {
+  DEFAULT_STORE_CONFIG,
+  getStoreConfig,
+} from "@/lib/firestore/store-config";
+import type { Log, StoreConfig } from "@/lib/firestore/types";
+import {
+  formatTime,
+  logActionStyle,
+  logAmountLabel,
+  phoneLast4,
+} from "@/lib/format";
 import { Spinner } from "@/components/ui/spinner";
 
 /**
@@ -23,7 +32,22 @@ export function DailyLogs({
   isToday: boolean;
 }) {
   const [logs, setLogs] = useState<Log[] | null>(null);
+  // 적립량의 단위(스탬프 개수 / 포인트 금액)를 붙이려면 매장 모드가 필요하다.
+  // 설정을 못 읽어도 목록은 떠야 하므로 기본값(스탬프)으로 시작한다.
+  const [config, setConfig] = useState<StoreConfig>(DEFAULT_STORE_CONFIG);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getStoreConfig(storeCode)
+      .then((c) => {
+        if (!cancelled) setConfig(c);
+      })
+      .catch((e) => console.error("[logs] 매장 설정 조회 실패:", e));
+    return () => {
+      cancelled = true;
+    };
+  }, [storeCode]);
 
   useEffect(() => {
     const unsubscribe = subscribeDailyLogs(storeCode, dateKey, setLogs, (e) => {
@@ -104,8 +128,7 @@ export function DailyLogs({
               </span>
 
               <span className="tabular ml-auto text-sm text-app-text-high">
-                {log.action === "stamp_saved" ? "+" : "−"}
-                {Math.abs(log.stamp)}
+                {logAmountLabel(log, config)}
               </span>
 
               <span className="tabular w-12 shrink-0 text-right text-sm text-app-text-low">

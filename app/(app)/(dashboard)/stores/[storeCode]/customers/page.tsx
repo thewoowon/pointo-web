@@ -6,8 +6,14 @@ import {
   filterCustomers,
   getStoreCustomers,
   MIN_QUERY_LENGTH,
+  pointsOf,
   type CustomerHit,
 } from "@/lib/firestore/users";
+import {
+  DEFAULT_STORE_CONFIG,
+  getStoreConfig,
+} from "@/lib/firestore/store-config";
+import type { StoreConfig } from "@/lib/firestore/types";
 import { maskPhone } from "@/lib/format";
 import { Spinner } from "@/components/ui/spinner";
 import { CustomerDetail } from "@/components/customer-detail";
@@ -26,6 +32,9 @@ export default function CustomersPage() {
   const { storeCode } = useParams<{ storeCode: string }>();
 
   const [customers, setCustomers] = useState<CustomerHit[] | null>(null);
+  // 보유량을 무슨 단위로 읽을지는 매장 모드가 정한다 (스탬프 개수 / 포인트 금액).
+  // 설정을 못 읽어도 목록은 떠야 하므로 기본값(스탬프)으로 시작한다.
+  const [config, setConfig] = useState<StoreConfig>(DEFAULT_STORE_CONFIG);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<CustomerHit | null>(null);
@@ -35,8 +44,12 @@ export default function CustomersPage() {
 
     (async () => {
       try {
-        const list = await getStoreCustomers(storeCode);
+        const [list, storeConfig] = await Promise.all([
+          getStoreCustomers(storeCode),
+          getStoreConfig(storeCode),
+        ]);
         if (cancelled) return;
+        setConfig(storeConfig);
         setCustomers(list);
       } catch (e) {
         if (cancelled) return;
@@ -58,6 +71,7 @@ export default function CustomersPage() {
   );
 
   const tooShort = digits.length < MIN_QUERY_LENGTH;
+  const isPoint = config.mode === "point";
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
@@ -120,9 +134,11 @@ export default function CustomersPage() {
                         {maskPhone(customer.phone)}
                       </span>
                       <span className="ml-auto text-sm text-app-text-mid">
-                        스탬프{" "}
+                        {isPoint ? "포인트" : "스탬프"}{" "}
                         <span className="tabular font-semibold text-app-text-highest">
-                          {customer.stamps ?? 0}
+                          {isPoint
+                            ? `${pointsOf(customer).toLocaleString()}${config.pointUnit}`
+                            : (customer.stamps ?? 0)}
                         </span>
                       </span>
                     </button>
@@ -141,6 +157,7 @@ export default function CustomersPage() {
             key={selected.phone}
             storeCode={storeCode}
             customer={selected}
+            config={config}
           />
         ) : (
           <div className="rounded-app-md border border-dashed border-app-line-strong px-5 py-16 text-center text-sm text-app-text-mid">

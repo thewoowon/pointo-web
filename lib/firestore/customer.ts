@@ -11,6 +11,7 @@
 import { doc, getDoc } from "firebase/firestore";
 import { getDb } from "../firebase";
 import { resolveStoreConfig } from "./store-config";
+import { pointsOf } from "./users";
 import type { CouponType, LevelTier, RecentLog, StoreConfig, User } from "./types";
 
 /** 숫자만 남긴다. 앱의 normalizePhone과 같다. */
@@ -54,8 +55,10 @@ export interface CustomerView {
   phone: string;
   level: number;
   tier: LevelTier | null;
-  /** 스탬프 모드=현재 스탬프 수, 포인트 모드=보유 포인트 */
+  /** 스탬프 모드의 현재 스탬프 수. 포인트 잔액은 `points`에 있다 */
   stamps: number;
+  /** 포인트 모드의 보유 포인트 */
+  points: number;
   coupons: CouponEntry[];
   recentLogs: RecentLog[];
   lastUsed: string;
@@ -203,6 +206,9 @@ export async function findCustomer(
     level,
     tier: resolveTier(level, config.levelTiers),
     stamps: data.stamps ?? 0,
+    // 모드가 정하는 필드에서만 읽는다. 포인트 매장의 잔액은 백필 전엔 stamps에,
+    // 백필 후엔 points에 있다 — pointsOf가 그 차이를 흡수한다.
+    points: config.mode === "point" ? pointsOf(data) : 0,
     coupons: buildCoupons(
       coupons,
       data.couponIssuedAt,

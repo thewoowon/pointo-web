@@ -16,6 +16,18 @@ export type CustomerHit = User & { phone: string };
 /** 이 자리수부터 결과를 보여준다. 너무 짧으면 매장 전체가 다 걸린다. */
 export const MIN_QUERY_LENGTH = 2;
 
+/**
+ * 포인트 잔액 읽기. **포인트 모드에서만 부른다.**
+ *
+ * 앱 `utils/coupons.pointsOf`와 같은 규칙이다. points 필드가 생기기 전 문서는
+ * 잔액이 stamps에 들어 있어서, 백필(앱 레포 scripts/migrate-points-field.mjs)
+ * 전에도 맞는 값이 나오도록 폴백을 둔다. 스탬프 모드에서 이 폴백을 쓰면 판에
+ * 찍힌 스탬프가 그대로 적립금이 돼버린다.
+ */
+export function pointsOf(u: { points?: number; stamps?: number }): number {
+  return u.points ?? u.stamps ?? 0;
+}
+
 /** 복합 문서 ID에서 전화번호만 뽑는다. 레거시 문서는 그대로 통과. */
 export function stripStoreSuffix(docId: string): string {
   const idx = docId.indexOf("_");
