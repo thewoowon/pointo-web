@@ -93,7 +93,10 @@ export default function CustomerLookup({ storeCode }: { storeCode: string }) {
       <header className="mb-8 text-center">
         <p className="text-sm text-app-text-mid">{store.name}</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight">
-          {result ? "내 적립 현황" : "내 스탬프 조회"}
+          {/* 번호를 넣기 전엔 매장 모드를 모른다 — 스탬프/포인트 어느 쪽에도
+              틀리지 않는 말을 쓴다. 포인트 매장에서 '스탬프'라고 하면 손님이
+              자기 적립금 화면이 아니라고 생각한다. */}
+          {result ? "내 적립 현황" : "내 적립 조회"}
         </h1>
       </header>
 

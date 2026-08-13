@@ -13,9 +13,11 @@ import CustomerLookup from "./lookup";
  * 하고, 쿼리스트링보다 공유·북마크가 자연스럽다.
  */
 
+// 매장마다 스탬프일 수도 포인트일 수도 있는데, 메타데이터는 매장 설정을 읽기 전에
+// 정해진다. 그래서 어느 쪽에도 틀리지 않는 말로 둔다.
 export const metadata: Metadata = {
-  title: "내 스탬프 조회 — 포인토",
-  description: "전화번호로 이 매장의 내 스탬프와 쿠폰을 확인하세요.",
+  title: "내 적립 조회 — 포인토",
+  description: "전화번호로 이 매장의 내 적립 현황을 확인하세요.",
   // 고객 개인 조회 화면이라 검색에 걸릴 이유가 없다.
   robots: { index: false, follow: false },
 };
