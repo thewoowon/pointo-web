@@ -53,9 +53,9 @@ export const testimonials: Testimonial[] = [
   {
     quote:
       "카페용인 줄 알고 반신반의했는데, 적립 방식만 저희에 맞게 바꿔 두니 그대로 쓰이더라고요. 이제는 손님이 먼저 번호를 부르세요.",
-    area: "동탄",
-    store: "OO볼링센터",
-    category: "볼링장",
+    area: "안양",
+    store: "OOOO",
+    category: "카페",
     // 2026-08-11 실측: 고객 131명, 적립·사용 796건.
     metric: { value: "131명", label: "이 매장 단골 고객" },
     confirmed: false,
