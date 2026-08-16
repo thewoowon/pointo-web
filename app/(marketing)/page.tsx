@@ -1,8 +1,25 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
+import { JsonLd } from "@/components/json-ld";
 import { AppStoreButton, ContactButton } from "@/components/marketing/cta";
 import { Testimonials } from "@/components/marketing/testimonials";
+import { industries } from "@/content/industries";
 import { stats, toManCheon, withComma } from "@/content/stats";
+import {
+  graph,
+  organizationSchema,
+  softwareApplicationSchema,
+  websiteSchema,
+} from "@/lib/seo/schema";
+import { absoluteUrl } from "@/lib/site";
+
+export const metadata: Metadata = {
+  // 루트 레이아웃의 title/description을 그대로 쓰되, canonical만 붙인다.
+  // 없으면 utm 파라미터가 달린 주소가 별도 페이지로 색인된다.
+  alternates: { canonical: absoluteUrl("/") },
+};
 
 /**
  * 랜딩(hellopointo.com).
@@ -18,9 +35,17 @@ import { stats, toManCheon, withComma } from "@/content/stats";
 export default function Home() {
   return (
     <main className="flex-1">
+      <JsonLd
+        data={graph(
+          organizationSchema(),
+          websiteSchema(),
+          softwareApplicationSchema(),
+        )}
+      />
       <Hero />
       <PaperVsPointo />
       <Features />
+      <Industries />
       <Testimonials />
       <HowItWorks />
       <ClosingCta />
@@ -349,6 +374,54 @@ function WideShot({
         className="mt-8 w-full"
       />
     </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   업종별 입구
+
+   랜딩은 "카페·볼링장·미용실 어디든"이라고 말하지만, 그건 어느 업종에게도
+   자기 이야기로 들리지 않는다. 업종 이름이 박힌 문을 만들어 준다. 검색으로
+   업종 페이지에 바로 떨어지는 경로와, 랜딩에서 자기 업종을 찾아 들어가는
+   경로가 같은 페이지에서 만난다.
+   ──────────────────────────────────────────────────────────────────────── */
+
+function Industries() {
+  return (
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="max-w-xl">
+          <p className="text-sm font-semibold text-primary">업종별로 보기</p>
+          <h2 className="mt-3 text-[26px] font-bold leading-snug sm:text-[34px]">
+            무엇을 셀지는 매장이 정합니다
+          </h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted sm:text-base">
+            카페는 잔을, 볼링장은 게임을, 학원은 출석을 셉니다. 앱 입장에서는
+            전부 같은 숫자입니다.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {industries.map((industry) => (
+            <Link
+              key={industry.slug}
+              href={`/for/${industry.slug}`}
+              className="group rounded-app-xl border border-border p-6 transition-colors hover:border-primary/30 hover:bg-app-brand-subtle"
+            >
+              <p className="text-[17px] font-bold group-hover:text-primary">
+                {industry.label}
+              </p>
+              <p className="mt-2 text-[14px] leading-relaxed text-muted">
+                {industry.unit} 단위로 {industry.recommend.mode} 적립
+              </p>
+              <span className="mt-4 inline-block text-[14px] font-medium text-primary">
+                자세히 보기 →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

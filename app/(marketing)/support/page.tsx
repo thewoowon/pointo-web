@@ -1,14 +1,57 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+
+import { JsonLd } from "@/components/json-ld";
+import { faq } from "@/content/faq";
+import { industries } from "@/content/industries";
+import { allPosts } from "@/lib/blog";
+import {
+  breadcrumbSchema,
+  faqSchema,
+  graph,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/seo/schema";
+import { CONTACT_EMAIL, absoluteUrl } from "@/lib/site";
+
+const DESCRIPTION =
+  "포인토 이용 중 궁금한 점과 자주 묻는 질문. 카페가 아니어도 되는지, 고객이 앱을 깔아야 하는지, 개인정보는 어디까지 받는지 정리했습니다.";
 
 export const metadata: Metadata = {
-  title: "고객지원 — 포인토",
-  description: "포인토 서비스 이용 중 궁금한 점이 있으시면 문의해주세요.",
+  title: "고객지원",
+  description: DESCRIPTION,
+  alternates: { canonical: absoluteUrl("/support") },
+  openGraph: {
+    type: "website",
+    url: absoluteUrl("/support"),
+    title: "고객지원 · 포인토",
+    description: DESCRIPTION,
+  },
 };
 
 export default function SupportPage() {
+  const posts = allPosts().slice(0, 4);
+
   return (
     <main className="flex-1 py-16 sm:py-24">
-      <div className="max-w-3xl mx-auto px-6">
+      {/*
+       * 이 페이지의 FAQ는 원래도 잘 쓰여 있었지만 `<details>` 마크업뿐이라
+       * 검색엔진과 AI 입장에서는 "질문과 답"이라는 사실이 어디에도 적혀 있지
+       * 않았다. 같은 배열(content/faq.ts)로 화면과 스키마를 동시에 먹인다.
+       */}
+      <JsonLd
+        data={graph(
+          organizationSchema(),
+          websiteSchema(),
+          faqSchema(faq),
+          breadcrumbSchema([
+            { name: "홈", path: "/" },
+            { name: "고객지원", path: "/support" },
+          ]),
+        )}
+      />
+
+      <div className="mx-auto max-w-3xl px-6">
         <h1 className="mb-4 text-[26px] font-bold leading-snug sm:text-[34px]">
           고객지원
         </h1>
@@ -18,25 +61,23 @@ export default function SupportPage() {
 
         {/* Contact */}
         <section className="mb-16">
-          <h2 className="text-xl font-semibold mb-6">문의하기</h2>
-          <div className="bg-surface rounded-2xl border border-border p-8">
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-lg">
-                  @
-                </div>
-                <div>
-                  <p className="font-medium mb-1">이메일 문의</p>
-                  <a
-                    href="mailto:thewoowon@gmail.com"
-                    className="text-primary hover:underline"
-                  >
-                    thewoowon@gmail.com
-                  </a>
-                  <p className="text-muted text-sm mt-1">
-                    영업일 기준 24시간 이내 답변드립니다.
-                  </p>
-                </div>
+          <h2 className="mb-6 text-xl font-semibold">문의하기</h2>
+          <div className="rounded-2xl border border-border bg-surface p-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg">
+                @
+              </div>
+              <div>
+                <p className="mb-1 font-medium">이메일 문의</p>
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="text-primary hover:underline"
+                >
+                  {CONTACT_EMAIL}
+                </a>
+                <p className="mt-1 text-sm text-muted">
+                  영업일 기준 24시간 이내 답변드립니다.
+                </p>
               </div>
             </div>
           </div>
@@ -44,61 +85,72 @@ export default function SupportPage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="text-xl font-semibold mb-6">자주 묻는 질문</h2>
+          <h2 className="mb-6 text-xl font-semibold">자주 묻는 질문</h2>
           <div className="space-y-4">
-            <FaqItem
-              question="카페가 아닌데 써도 되나요?"
-              answer="네. 적립 방식을 매장에서 정하기 때문에 볼링장, 미용실, 학원처럼 재방문이 있는 곳이면 그대로 쓰실 수 있습니다. 잔 수 대신 이용 횟수나 금액으로 쌓도록 바꾸면 됩니다."
-            />
-            <FaqItem
-              question="매장 등록은 어떻게 하나요?"
-              answer="앱을 설치하고 구글 또는 애플 계정으로 로그인한 뒤 '매장 등록'에서 매장 정보를 입력하시면 됩니다. 관리자 승인 후 바로 사용할 수 있습니다."
-            />
-            <FaqItem
-              question="고객은 앱을 설치해야 하나요?"
-              answer="아닙니다. 고객은 앱 설치 없이 매장에 비치된 태블릿에서 전화번호만 입력하면 적립됩니다."
-            />
-            <FaqItem
-              question="스탬프 개수나 쿠폰 종류를 바꿀 수 있나요?"
-              answer="네, 사장님 전용 설정 화면에서 스탬프 개수, 쿠폰 종류, 환영 메시지 등을 자유롭게 설정할 수 있습니다."
-            />
-            <FaqItem
-              question="여러 매장을 운영하고 있는데 각각 등록 가능한가요?"
-              answer="네. 계정 하나로 로그인하면 운영 중인 매장이 모두 보이고, 매장별 적립과 쿠폰은 서로 완전히 분리되어 관리됩니다."
-            />
-            <FaqItem
-              question="고객 정보는 안전한가요?"
-              answer="포인토는 전화번호 외 어떠한 개인정보도 수집하지 않습니다. 데이터는 Google Firebase에 암호화되어 안전하게 보관됩니다."
-            />
-            <FaqItem
-              question="회원 탈퇴는 어떻게 하나요?"
-              answer="앱 내 고객 화면에서 직접 탈퇴할 수 있으며, 탈퇴 시 모든 개인정보가 즉시 삭제됩니다."
-            />
+            {faq.map(({ q, a }) => (
+              <FaqItem key={q} question={q} answer={a} />
+            ))}
           </div>
         </section>
+
+        {/* 업종별 안내 — "우리 업종도 되나요"가 가장 많은 질문이다. */}
+        <section className="mt-16">
+          <h2 className="mb-6 text-xl font-semibold">업종별 안내</h2>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {industries.map((industry) => (
+              <li key={industry.slug}>
+                <Link
+                  href={`/for/${industry.slug}`}
+                  className="block rounded-2xl border border-border p-5 transition-colors hover:border-primary/30 hover:bg-app-brand-subtle"
+                >
+                  <p className="font-medium">{industry.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
+                    {industry.recommend.mode} 적립 · {industry.unit} 단위
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* 더 긴 답이 필요한 질문은 글로 넘긴다. */}
+        {posts.length > 0 && (
+          <section className="mt-16">
+            <h2 className="mb-6 text-xl font-semibold">더 자세한 안내</h2>
+            <ul className="space-y-3">
+              {posts.map(({ meta }) => (
+                <li key={meta.slug}>
+                  <Link
+                    href={`/blog/${meta.slug}`}
+                    className="group flex items-baseline gap-3"
+                  >
+                    <span className="font-medium group-hover:text-primary">
+                      {meta.title}
+                    </span>
+                  </Link>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
+                    {meta.description}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </main>
   );
 }
 
-function FaqItem({
-  question,
-  answer,
-}: {
-  question: string;
-  answer: string;
-}) {
+function FaqItem({ question, answer }: { question: string; answer: string }) {
   return (
-    <details className="group bg-surface rounded-2xl border border-border">
-      <summary className="flex items-center justify-between cursor-pointer p-6 font-medium">
+    <details className="group rounded-2xl border border-border bg-surface">
+      <summary className="flex cursor-pointer items-center justify-between p-6 font-medium">
         {question}
-        <span className="text-muted text-xl transition-transform group-open:rotate-45 ml-4 shrink-0">
+        <span className="ml-4 shrink-0 text-xl text-muted transition-transform group-open:rotate-45">
           +
         </span>
       </summary>
-      <div className="px-6 pb-6 text-muted text-[15px] leading-7">
-        {answer}
-      </div>
+      <div className="px-6 pb-6 text-[15px] leading-7 text-muted">{answer}</div>
     </details>
   );
 }
