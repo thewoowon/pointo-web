@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { CONTACT_MAIL } from "@/components/marketing/cta";
+import { industries } from "@/content/industries";
 
 /**
  * 마케팅 사이트 레이아웃 (hellopointo.com 랜딩).
@@ -30,8 +31,14 @@ const BUSINESS_INFO: [string, string][] = [
 const NAV = [
   { href: "/#features", label: "기능" },
   { href: "/#reviews", label: "도입 매장" },
+  { href: "/blog", label: "콘텐츠" },
   { href: "/support", label: "고객지원" },
 ];
+
+const INDUSTRY_LINKS = industries.map((i) => ({
+  href: `/for/${i.slug}`,
+  label: i.label,
+}));
 
 function Wordmark() {
   return (
@@ -90,26 +97,53 @@ function Footer() {
             </p>
           </div>
 
-          <nav className="flex flex-col gap-3 text-sm sm:text-right">
-            <Link
-              href="/support"
-              className="text-muted transition-colors hover:text-foreground"
-            >
-              고객지원
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-muted transition-colors hover:text-foreground"
-            >
-              개인정보처리방침
-            </Link>
-            <a
-              href={CONTACT_MAIL}
-              className="text-muted transition-colors hover:text-foreground"
-            >
-              도입 문의
-            </a>
-          </nav>
+          {/*
+           * 업종 링크를 푸터에 둔다. 헤더에 넣으면 항목이 다섯 개가 되어 좁은
+           * 화면에서 먼저 잘려 나가고, 무엇보다 이 링크들은 검색으로 들어온
+           * 사람이 "우리 업종도 있나"를 확인하는 자리라 아래쪽이 맞다.
+           */}
+          <div className="grid gap-8 text-sm sm:grid-cols-2 sm:gap-14">
+            <nav className="flex flex-col gap-3">
+              <p className="font-semibold text-foreground">업종별 안내</p>
+              {INDUSTRY_LINKS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-muted transition-colors hover:text-foreground"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <nav className="flex flex-col gap-3">
+              <p className="font-semibold text-foreground">포인토</p>
+              <Link
+                href="/blog"
+                className="text-muted transition-colors hover:text-foreground"
+              >
+                콘텐츠
+              </Link>
+              <Link
+                href="/support"
+                className="text-muted transition-colors hover:text-foreground"
+              >
+                고객지원
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-muted transition-colors hover:text-foreground"
+              >
+                개인정보처리방침
+              </Link>
+              <a
+                href={CONTACT_MAIL}
+                className="text-muted transition-colors hover:text-foreground"
+              >
+                도입 문의
+              </a>
+            </nav>
+          </div>
         </div>
 
         <div className="mt-10 space-y-2 border-t border-border pt-6 text-[13px] leading-relaxed text-app-text-low">
